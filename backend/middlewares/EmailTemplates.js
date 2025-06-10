@@ -65,7 +65,7 @@ export const Verification_Email_Template = `
           <div class="header">Verify Your Email</div>
           <div class="content">
               <p>Hello,</p>
-              <p>Thank you for signing up! Please confirm your email address by entering the code below:</p>
+              <p>Thank you for signing up! Please confirm your email address by entering the code below Expires in 5 minute :</p>
               <span class="verification-code">{verificationCode}</span>
               <p>If you did not create an account, no further action is required. If you have any questions, feel free to contact our support team.</p>
           </div>
@@ -77,8 +77,14 @@ export const Verification_Email_Template = `
   </html>
 `;
 
-
-
+export const Reset_Password_Email_Template = `
+  <div style="font-family: sans-serif; line-height: 1.5;">
+    <h2>Password Reset Request</h2>
+    <p>Click the link below to reset your password. This link will expire in 15 minutes:</p>
+    <a href="{resetLink}" target="_blank">{resetLink}</a>
+    <p>If you did not request a password reset, ignore this email.</p>
+  </div>
+`;
 
 export const Welcome_Email_Template = `
   <!DOCTYPE html>

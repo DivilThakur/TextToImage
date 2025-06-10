@@ -1,7 +1,8 @@
-import nodemailer from 'nodemailer'
-import dotenv from 'dotenv'
+import nodemailer from "nodemailer";
+import dotenv from "dotenv";
 dotenv.config();
-import { Verification_Email_Template } from './EmailTemplates.js'
+import { Verification_Email_Template } from "./EmailTemplates.js";
+import { Reset_Password_Email_Template } from "./EmailTemplates.js";
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -13,7 +14,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-
 export const sendVerificationCode = async (email, verificationCode) => {
   try {
     const info = await transporter.sendMail({
@@ -21,10 +21,28 @@ export const sendVerificationCode = async (email, verificationCode) => {
       to: email,
       subject: "Verify your email ✔",
       text: "verify your email ✔",
-      html: Verification_Email_Template.replace("{verificationCode}", verificationCode),
+      html: Verification_Email_Template.replace(
+        "{verificationCode}",
+        verificationCode
+      ),
     });
-    console.log("email send successfully ", info)
+    console.log("email send successfully ", info);
   } catch (error) {
     console.log("error in opt middleware ", error);
   }
-}
+};
+
+export const sendResetPasswordEmail = async (email, resetLink) => {
+  try {
+    const info = await transporter.sendMail({
+      from: '"Divil Thakur 👻" <divilthkr3@gmail.com>',
+      to: email,
+      subject: "Reset Your Password ✔",
+      text: "Reset your password ✔",
+      html: Reset_Password_Email_Template.replace(/{resetLink}/g, resetLink),
+    });
+    console.log("Reset email sent successfully:", info.messageId);
+  } catch (error) {
+    console.log("Error sending reset email:", error);
+  }
+};
