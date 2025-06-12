@@ -1,29 +1,25 @@
-import React, { useContext, useState } from 'react'
-import { Outlet, useNavigate } from 'react-router-dom'
-import { AppContext } from '../context/AppContext';
-import toast from 'react-hot-toast';
-import Spinner from '../components/Spinner';
+import React, { useContext, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { AppContext } from "../context/AppContext";
+import toast from "react-hot-toast";
 
+const PrivateRoute = ({ children }) => {
+  const navigate = useNavigate();
+  const { setShowLogin } = useContext(AppContext);
 
-
-
-const PrivateRoute = () => {
-
-    const { setShowLogin } = useContext(AppContext);
-    const navigate = useNavigate();
-    const [loading,setLoading] = useState(true);
-
-    if (!localStorage.getItem('token')) {
-        window.location.href = '/';
-        toast.error("login required");
+  useEffect(() => {
+    if (!localStorage.getItem("token")) {
+      setShowLogin(true);
+      navigate("/");
+      toast.error("Login required");
     }
-    if (localStorage.getItem('token')) {
-        return <Outlet />;
-    }
+  }, []);
 
-    return <Spinner/>
+  if (!localStorage.getItem("token")) {
+    return null;
+  }
 
-  
-}
+  return children;
+};
 
-export default PrivateRoute
+export default PrivateRoute;

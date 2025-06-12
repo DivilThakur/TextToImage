@@ -1,17 +1,42 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Pricing from "./pages/Pricing";
-import { Route, Router, Routes } from "react-router-dom";
+import { Route, Routes, Navigate, useLocation } from "react-router-dom";
 import Result from "./pages/Result";
 import { Toaster } from "react-hot-toast";
-import PrivateRoute from "./pages/PrivateRoute";
 import ResetPassword from "./components/ResetPassword";
 import Login from "./components/Login";
+import LoadingScreen from "./components/LoadingScreen";
+
+import PrivateRoute from "./pages/PrivateRoute";
 
 function App() {
+  const [isLoading, setIsLoading] = useState(true);
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname === "/" && !localStorage.getItem("hasLoaded")) {
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+        localStorage.setItem("hasLoaded", "true");
+      }, 5000);
+      return () => clearTimeout(timer);
+    } else {
+      setIsLoading(false);
+    }
+  }, [location.pathname]);
+
+  if (
+    isLoading &&
+    location.pathname === "/" &&
+    !localStorage.getItem("hasLoaded")
+  ) {
+    return <LoadingScreen />;
+  }
+
   return (
-    <div className="">
+    <>
       <Toaster />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -19,11 +44,16 @@ function App() {
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
-        <Route path="/generate" element={<PrivateRoute />}>
-          <Route index element={<Result />} />
-        </Route>
+        <Route
+          path="/generate"
+          element={
+            <PrivateRoute>
+              <Result />
+            </PrivateRoute>
+          }
+        />
       </Routes>
-    </div>
+    </>
   );
 }
 

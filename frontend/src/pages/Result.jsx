@@ -5,11 +5,12 @@ import { assets } from "../assets/assets";
 import Login from "../components/Login";
 import { motion } from "motion/react";
 import { AppContext } from "../context/AppContext";
-import { Download } from "lucide-react";
+import { Download, History } from "lucide-react";
 import GenerateImg from "../components/GenerateImg";
 import toast from "react-hot-toast";
 import Fuse from "fuse.js";
 import { promptSuggestions } from "../assets/assets.js";
+import SearchHistory from "../components/SearchHistory";
 
 function Result() {
   const { showLogin, credit, generateImage, token } = useContext(AppContext);
@@ -20,7 +21,9 @@ function Result() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [lastSelectedSuggestion, setLastSelectedSuggestion] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [showHistory, setShowHistory] = useState(false);
   const suggestionsRef = useRef(null);
+  const historyRef = useRef(null);
 
   const fuse = new Fuse(promptSuggestions, {
     threshold: 1,
@@ -32,6 +35,9 @@ function Result() {
       if (suggestionsRef.current && !suggestionsRef.current.contains(event.target)) {
         setShowSuggestions(false);
         setSelectedIndex(-1);
+      }
+      if (historyRef.current && !historyRef.current.contains(event.target)) {
+        setShowHistory(false);
       }
     };
 
@@ -60,6 +66,11 @@ function Result() {
     setLastSelectedSuggestion(suggestion);
     setShowSuggestions(false);
     setSelectedIndex(-1);
+  };
+
+  const handleHistorySelect = (historyItem) => {
+    setInput(historyItem);
+    setShowHistory(false);
   };
 
   const handleKeyDown = (e) => {
@@ -95,6 +106,13 @@ function Result() {
       return toast.error("Not login");
     }
     if (input) {
+     
+      const history = JSON.parse(localStorage.getItem('searchHistory') || '[]');
+      if (!history.includes(input)) {
+        history.unshift(input);
+        localStorage.setItem('searchHistory', JSON.stringify(history.slice(0, 10)));
+      }
+      
       setImageloaded(false);
       const image = await generateImage(input);
       if (image) {
@@ -171,15 +189,32 @@ function Result() {
                 placeholder="Describe what you want or hit a tag below"
                 className="flex-1 bg-transparent px-4 w-[50%] border-black outline-none text-neutral-600"
               />
-              <button
-                type="submit"
-                className="px-2 py-1 sm:px-5 sm:py-3 rounded-lg bg-[#60b386] text-white font-medium hover:bg-green-500"
-              >
-                Generate
-              </button>
+              <div className="flex items-center space-x-2">
+                <button
+                  type="button"
+                  onClick={() => setShowHistory(!showHistory)}
+                  className="p-2 text-gray-600 hover:text-gray-800 transition-colors"
+                  ref={historyRef}
+                >
+                  <History className="w-5 h-5" />
+                </button>
+                <button
+                  type="submit"
+                  className="px-2 py-1 sm:px-5 sm:py-3 rounded-lg bg-[#60b386] text-white font-medium hover:bg-green-500"
+                >
+                  Generate
+                </button>
+              </div>
             </div>
 
-            {/* Suggestion List */}
+           
+            <SearchHistory 
+              isOpen={showHistory}
+              onSelectHistory={handleHistorySelect}
+              onClose={() => setShowHistory(false)}
+            />
+
+           
             {showSuggestions && suggestions.length > 0 && (
               <ul className="absolute z-10 w-full bg-white shadow-md rounded-lg mt-1 max-h-52 overflow-y-auto top-full left-0">
                 {suggestions.map((item, index) => (
@@ -239,7 +274,6 @@ function Result() {
             </motion.div>
           </div>
         </motion.div>
-
         {imageLoaded ? (
           <div className="mt-16">
             <motion.img
