@@ -16,10 +16,10 @@ function App() {
   const location = useLocation();
 
   useEffect(() => {
-    if (location.pathname === "/" && !localStorage.getItem("hasLoaded")) {
+    if (location.pathname === "/" && !sessionStorage.getItem("hasLoaded")) {
       const timer = setTimeout(() => {
         setIsLoading(false);
-        localStorage.setItem("hasLoaded", "true");
+        sessionStorage.setItem("hasLoaded", "true");
       }, 5000);
       return () => clearTimeout(timer);
     } else {
@@ -30,7 +30,7 @@ function App() {
   if (
     isLoading &&
     location.pathname === "/" &&
-    !localStorage.getItem("hasLoaded")
+    !sessionStorage.getItem("hasLoaded")
   ) {
     return <LoadingScreen />;
   }
