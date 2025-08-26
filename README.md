@@ -51,6 +51,7 @@ Before running the project, create a `.env` file in both **backend** and **front
 ```env
 PORT=5000
 NODE_ENV=development
+FRONTEND_URL=http://localhost:5000   # or your deployed frontend URL
 
 # MongoDB
 MONGO_DB_URL=your_mongodb_connection_url
