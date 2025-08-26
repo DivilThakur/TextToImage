@@ -42,6 +42,40 @@ npm install
 npm run dev
 ```
 
+## 🔧 2. ENV Setup  
+
+Before running the project, create a `.env` file in both **backend** and **frontend** directories.  
+
+### 📂 Backend (`/backend/.env`)  
+
+```env
+PORT=5000
+NODE_ENV=development
+
+# MongoDB
+MONGO_DB_URL=your_mongodb_connection_url
+
+# ClipDrop API
+CLIPDROP_API_KEY=your_clipdrop_api_key
+
+# JWT
+JWT_SECRET=your_jwt_secret
+
+# Razorpay
+RAZORPAY_API_KEY=your_razorpay_api_key
+RAZORPAY_SECRET=your_razorpay_secret
+CURRENCY=INR
+
+# Email (for OTP / Forgot Password system)
+USER_EMAIL=your_email@example.com
+USER_PASSWORD=your_email_password_or_app_password
+```
+### 📂 Frontend (`/frontend/.env`)
+```env
+VITE_BACKEND_URL=http://localhost:5000   # or your deployed backend URL
+VITE_RAZORPAY_API_KEY=your_razorpay_api_key
+```
+
 ## 🙌 Acknowledgements
 Thanks to the ClipDrop team for providing such an amazing API.
 
