@@ -10,6 +10,9 @@ import Login from "./components/Login";
 import LoadingScreen from "./components/LoadingScreen";
 import PrivateRoute from "./pages/PrivateRoute";
 import { trackVisitor } from "./utils/trackVisitors";
+import { inject } from '@vercel/analytics';
+
+inject();
 
 let backendWarmupStarted = false;
 
