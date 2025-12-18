@@ -44,8 +44,9 @@ const AppContextProvider = (props) => {
             localStorage.removeItem('token');
             setToken(null);
             setUser(null);
+            navigate("/");
         } catch (error) {
-            console.log("error in logout ",error);
+            console.log("error in logout ", error);
         }
     }
 

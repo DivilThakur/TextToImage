@@ -5,6 +5,8 @@ import connectDb from './config/mongo.js';
 import userRouter from './routes/userRoute.js';
 import cookieParser from 'cookie-parser';
 import imageRouter from './routes/imageRoute.js';
+import visitorRouter from "./routes/visitorRoute.js";
+
 
 dotenv.config();
 
@@ -17,6 +19,16 @@ app.use(cors());
 app.use(cookieParser());
 await connectDb()
 
+app.get("/api/health", (req, res) => {
+    res.status(200).json({
+        status: "ok",
+        uptime: process.uptime(),
+        timestamp: Date.now(),
+    });
+});
+
+
+app.use("/api", visitorRouter);
 app.use('/api/user', userRouter);
 app.use('/api/image', imageRouter);
 

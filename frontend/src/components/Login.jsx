@@ -77,7 +77,8 @@ function Login() {
     const Code = otp.join("");
     if (otp.length === 4 && /^\d{4}$/.test(Code)) {
       const { data } = await axios.post(backendUrl + "/api/user/verify-otp", {
-        Code,
+        email,
+        code: Code,
       });
       if (data.success) {
         setToken(data.token);
@@ -325,8 +326,8 @@ function Login() {
                 ? "Loading..."
                 : "Login"
               : loader
-              ? "Loading..."
-              : "Create Account"}{" "}
+                ? "Loading..."
+                : "Create Account"}{" "}
           </button>
 
           {state === "Login" ? (

@@ -37,7 +37,9 @@ export const registerUser = async (req, res) => {
       email,
       password: hashedPassword,
       verificationCode,
+      verificationCodeExpires: new Date(Date.now() + 5 * 60 * 1000),
     };
+
 
     const newUser = new userModel(userData);
     const user = await newUser.save();
@@ -158,41 +160,39 @@ export const resetPassword = async (req, res) => {
 
 export const verifyOtp = async (req, res) => {
   try {
-    const { Code } = req.body;
+    const { email, code } = req.body;
+
     const user = await userModel.findOne({
-      verificationCode: Code,
+      email,
+      verificationCode: code,
+      verificationCodeExpires: { $gt: Date.now() },
     });
 
     if (!user) {
-      res.json({ success: false, message: "Invalid or Expired Code" });
-    }
-
-    if (
-      !user.verificationCodeExpires ||
-      user.verificationCodeExpires < Date.now()
-    ) {
       return res.json({
         success: false,
-        message: "Verification code has expired",
+        message: "Invalid or expired verification code",
       });
     }
 
     user.verificationCode = undefined;
     user.verificationCodeExpires = undefined;
     await user.save();
+
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
 
     return res.status(200).json({
       success: true,
       token,
       user: { name: user.name },
-      message: "Email verified succesfully",
+      message: "Email verified successfully",
     });
   } catch (error) {
-    console.log("error in verifyotp controller", error);
+    console.log("error in verifyOtp controller", error);
     return res.json({ success: false, message: error.message });
   }
 };
+
 
 export const resendVerificationEmail = async (req, res) => {
   const { email } = req.body;
@@ -207,10 +207,13 @@ export const resendVerificationEmail = async (req, res) => {
     }
 
     const verificationCode = Math.floor(1000 + Math.random() * 9000).toString();
+
+    user.verificationCode = verificationCode;
     user.verificationCodeExpires = new Date(Date.now() + 5 * 60 * 1000);
     await user.save();
 
     await sendVerificationCode(email, verificationCode);
+
 
     res.status(200).json({
       success: true,
@@ -327,5 +330,5 @@ export const verfiyPayment = async (req, res) => {
     } else {
       res.json({ success: false, message: "payment failed" });
     }
-  } catch (error) {}
+  } catch (error) { }
 };
